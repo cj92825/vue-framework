@@ -41,7 +41,7 @@
                       type="text"
                       size="mini"
                       icon="el-icon-edit-outline"
-                      @click.stop="handlerTreeEdit(data)"
+                      @click.stop="handlerTreeEdit(data,node)"
                     ></el-button>
                   </el-tooltip>
                   <el-tooltip v-if="data.parentId>=0" content="删除">
@@ -82,6 +82,15 @@
             <el-form-item label="跳转路径" prop="redirect">
               <el-input v-model.trim="form.redirect" placeholder="请输入跳转路径"></el-input>
             </el-form-item>
+            <el-form-item label="元信息" prop="meta">
+              <el-tooltip effect="light">
+                <div slot="content">
+                  添加菜单图标{"icon":"svg名"}
+                  <br />添加角色权限{"roles":["ADMIN","chenj"]}
+                </div>
+                <el-input v-model.trim="form.meta" placeholder="请输入元信息,设置菜单图标,权限等"></el-input>
+              </el-tooltip>
+            </el-form-item>
             <el-form-item v-if="formStatus == 'update'">
               <el-button type="primary" @click="()=>update()">更新</el-button>
               <el-button @click="()=>cancel(true)">取消</el-button>
@@ -111,11 +120,12 @@ export default {
         children: 'children',
         label: 'name'
       },
-      form:{
+      form: {
         name: undefined,
         path: undefined,
         component: undefined,
-        redirect: undefined
+        redirect: undefined,
+        meta: undefined
       },
       detailLoading: false,
       formStatus: 'detail',
@@ -146,7 +156,7 @@ export default {
     },
     filterNode (value, data) {
       if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      return data.name.indexOf(value) !== -1;
     },
     formatTree (data) {
       let branch = {
@@ -168,7 +178,7 @@ export default {
           })
         }
       })
-      this.treeData=[]
+      this.treeData = []
       this.treeData.push(branch)
     },
     handleNodeClick (data) {
@@ -177,11 +187,12 @@ export default {
     },
     handlerTreeAdd (data) {
       this.resetForm()
-      this.form.parentId = Math.max(0,data.id)
+      this.form.parentId = Math.max(0, data.id)
       this.formStatus = 'create'
     },
-    handlerTreeEdit (data) {
+    handlerTreeEdit (data,node) {
       Object.assign(this.form, data)
+      console.log(JSON.stringify(this.form))
       this.formStatus = 'update'
     },
     handlerTreeDelete (data) {
@@ -199,7 +210,7 @@ export default {
         type: 'warning'
       }).then(() => {
         deleteMenu(idList).then(res => {
-          let {data}=res.data
+          let { data } = res.data
           if (data) {
             this.$notify({
               title: '成功',
@@ -209,7 +220,7 @@ export default {
             })
             this.cancel(true)
             this.getMenus()
-          } else{
+          } else {
             this.$notify({
               title: '失败',
               message: '删除失败',

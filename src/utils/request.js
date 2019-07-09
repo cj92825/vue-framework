@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { MessageBox, Message } from 'element-ui'
 import store from '@/store'
-import router from '@/router'
+import router from '../router'
+// import router from '@/router'
 // import { getToken } from '@/utils/auth'
 
 // create an axios instance
@@ -47,21 +48,29 @@ service.interceptors.response.use(
         type: 'error',
         duration: 3 * 1000
       })
-      return Promise.reject(error)
     } else {
       switch (error.response.status) {
         case 401: // 未登录跳转
-          MessageBox.alert(`未登录或凭证过期,请重新登陆!`, `错误`, {
-            confirmButtonText: '登录',
-            showCancelButton: false,
-            showClose: false,
-            type: 'error'
-          }).then(() => {
-            store.dispatch('user/resetToken')
-            window.location.href = `/#/login?redirect=${window.location.href}`
-            // router.push(`/login?redirect=${window.location.href}`)
-            // window.location.href = `/#/login`
+          // MessageBox.alert(`未登录或凭证过期,请重新登陆!`, `错误`, {
+          //   confirmButtonText: '登录',
+          //   showCancelButton: false,
+          //   showClose: false,
+          //   type: 'error'
+          // }).then(() => {
+          //   store.dispatch('user/resetToken')
+          //   window.location.href = `/#/login?redirect=${window.location.href}`
+          //   // router.push(`/login?redirect=${window.location.href}`)
+          //   // window.location.href = `/#/login`
+          // })
+          Message({
+            message: `未登录或凭证过期,请重新登陆!`,
+            type: 'error',
+            duration: 2 * 1000
           })
+          store.dispatch('user/resetToken')
+          // window.location.href = `/login?redirect=${window.location.href}`
+          // router.push(`/login?redirect=${router.currentRoute.fullPath}`)
+          router.go(0)
           break
         default:
           // 其他错误
@@ -70,9 +79,9 @@ service.interceptors.response.use(
             type: 'error',
             duration: 3 * 1000
           })
-          return Promise.reject(error)
       }
     }
+    return Promise.reject(error)
   }
 )
 

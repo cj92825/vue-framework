@@ -39,9 +39,13 @@ function formatAsyncRoutes (list) {
   const res = []
   list.forEach(node => {
     const temp = {}
-    temp.meta = {
-      title: node.name,
-      icon: 'table'
+    temp.meta = {}
+    if (node.meta) {
+      temp.meta = JSON.parse(node.meta)
+    }
+    temp.meta.title = node.name
+    if (!temp.meta.icon) {
+      temp.meta.icon = 'table'
     }
     if (node.component !== 'Layout') {
       const value = node.component
@@ -87,10 +91,11 @@ const actions = {
       getMenus().then(res => {
         const { data } = res.data
         accessedRoutes = formatAsyncRoutes(data)
-        console.log(JSON.stringify(accessedRoutes))
+        accessedRoutes = filterAsyncRoutes(accessedRoutes, roles)
         commit('SET_ROUTES', accessedRoutes)
         resolve(accessedRoutes)
       })
+
       // if (roles.includes('ADMIN')) {
       //   accessedRoutes = asyncRoutes || []
       // } else {
