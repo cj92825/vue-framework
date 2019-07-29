@@ -74,7 +74,13 @@
               <el-input v-model.trim="form.name" placeholder="请输入菜单标题"></el-input>
             </el-form-item>
             <el-form-item label="路由路径" prop="path">
+               <el-tooltip effect="light">
+                <div slot="content">
+                  一级目录要加"/",例如"/path"
+                  <br />大于一级不加
+                </div>
               <el-input v-model.trim="form.path" placeholder="请输入路由路径"></el-input>
+              </el-tooltip>
             </el-form-item>
             <el-form-item label="前端组件" prop="component">
               <el-input v-model.trim="form.component" placeholder="请输入组件路径"></el-input>
